@@ -8,6 +8,23 @@ A hub keeps accounts. An account can lend its machines, and the agents signed in
 
 Codex and Claude Code come with their makers' terms of use, which say who may use a subscription and how. fastctx starts only the official programs, unmodified, signed in as whoever signed in on that machine, and every request an agent makes to its maker goes from the machine it runs on, over that machine's own network: fastctx never relays, tunnels or proxies those requests. Whether lending a machine's agents to another account fits those terms is for you to decide, and we ask everyone who uses fastctx to keep to them.
 
+## Web search in Codex World conversations
+
+A Codex conversation started by World with no search setup gets web search and
+page fetching through [Parallel Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp).
+Search uses Fast mode, with no Parallel account or API key. Search queries and
+requested page URLs go directly from the machine running Codex to Parallel.
+Anonymous use has rate limits; a failed request returns its error without switching
+to another search service.
+
+Saved search settings, other MCP servers, profiles, plugins and permission or
+managed configuration keep their own setup. World checks Codex's login and project
+configuration before starting, resuming or forking a conversation, and never writes
+this default to those files. To use Codex's native search instead, set
+`web_search = "cached"` or `web_search = "live"` in your Codex configuration;
+`web_search = "disabled"` also prevents World from adding Parallel. An existing
+`[mcp_servers.parallel-search]` entry is kept, including credentials or `enabled = false`.
+
 ## Status
 
 This branch is the rebuild, and nothing on it has been released yet. The released version is 0.2.6, on npm as `fastctx` (and `codex-fastctx`) and on GitHub Releases; its source is the `v0.2.6` tag.

@@ -33,6 +33,7 @@ mod management;
 mod notifications;
 mod offers;
 mod presentation;
+mod search;
 mod server;
 mod title;
 mod tool_images;
@@ -455,6 +456,7 @@ impl CodexHost {
     /// its ID and model, so an idle app-server replacement can resume it.
     pub async fn start_thread(self: &Arc<Self>, spec: ThreadSpec) -> Result<(String, Option<String>), String> {
         let server = self.server().await?;
+        let config = self.search_config(&server, &spec.cwd, &spec.config).await;
         let answer = server
             .request(
                 "thread/start",
@@ -463,7 +465,7 @@ impl CodexHost {
                     "approvalPolicy": "never",
                     "sandbox": "danger-full-access",
                     "developerInstructions": spec.developer_instructions,
-                    "config": spec.config,
+                    "config": config,
                     "ephemeral": false,
                     "historyMode": "paginated",
                     "environments": [],
@@ -846,6 +848,7 @@ impl CodexHost {
             entry.spec.clone().ok_or_else(|| format!("how the Codex thread {thread} was started is not known"))?
         };
         let selection = controls::Selection::read(&spec.choices)?;
+        let config = self.search_config(server, &spec.cwd, &spec.config).await;
         let answer = server
             .request(
                 "thread/resume",
@@ -855,7 +858,7 @@ impl CodexHost {
                     "approvalPolicy": "never",
                     "sandbox": "danger-full-access",
                     "developerInstructions": spec.developer_instructions,
-                    "config": spec.config,
+                    "config": config,
                     "excludeTurns": true,
                 }),
             )
